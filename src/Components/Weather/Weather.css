@@ -61,6 +61,13 @@
     /* -webkit-text-stroke: 0.5px rgb(44, 44, 44); */
 }
 
+.fewclouds {
+    background-image: url('./assets/few\ clouds.jpg');
+    background-repeat: no-repeat;
+    background-size: cover;
+    color: #292626;
+}
+
 .smoke {
     background-image: url('./assets/smoke.jpg');
     background-repeat: no-repeat;
