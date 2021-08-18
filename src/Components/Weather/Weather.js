@@ -6,8 +6,9 @@ export default function Weather() {
   const [latitude, setLatitude] = useState(null);
   const [longitude, setLongitude] = useState(null);
   const [city, setCity] = useState("");
+  const [cityUserInput, setCityUserInput] = useState("");
 
-  const handleCityChange = (e) => setCity(e.target.value);
+  const handleCityChange = (e) => setCityUserInput(e.target.value);
   const [data, setData] = useState(null);
 
   useEffect(() => {
@@ -36,14 +37,23 @@ export default function Weather() {
     if (city !== "") {
 
       fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=3555c92ebb9a46d47a72fd004c7c7c62&units=metric`)
+        .then(function (response) {
+          if (!response.ok) {
+            throw Error(response.statusText);
+          }
+          return response;
+        })
         .then(response => response.json())
         .then(json => setData(json))
+        .catch(function (error) {
+          console.log(error);
+        });
 
       return () => {
       }
 
     }
-  }, [])
+  }, [city])
 
   if (data === null) {
     return (
@@ -58,13 +68,15 @@ export default function Weather() {
         <div></div>
         <div className={`container ${(data.weather[0].description).replace(/ /g, '')}`}>
 
-          <div className="search-container">
-            <input value={city} className="search-bar" onChange={handleCityChange} type="text"></input>
-            <button onClick={()=>console.log()} className="search-btn" type="button">Go</button>
+          <div >
+            <form className="search-container" onSubmit={e => { e.preventDefault(); setCity(cityUserInput); }} action="none">
+              <input value={cityUserInput} className="search-bar" onChange={handleCityChange} placeholder="Enter a City" type="text"></input>
+              <button onClick={() => setCity(cityUserInput)} className="search-btn" type="submit">Go</button>
+            </form>
           </div>
 
           <div>
-            <h2 className="heading">{data.name}</h2>
+            <h2 className="heading">{data.name}, {data.sys.country}</h2>
           </div>
 
           <div className="conditions">
@@ -74,10 +86,12 @@ export default function Weather() {
           <div className="temp">
             {(data.main.temp).toPrecision(2)}°C
           </div>
-
-          <div>
-            <p>City: {city}</p>
+          <div className="max-min">
+            <div>Min: {(data.main.temp_min).toPrecision(3)}°C</div>
+            <div>Max: {(data.main.temp_max).toPrecision(3)}°C</div>
           </div>
+
+
         </div>
       </div>
 
